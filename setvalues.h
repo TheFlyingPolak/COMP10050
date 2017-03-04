@@ -18,6 +18,14 @@ struct player{
 		int magic;
 		int luck;
 		int life;
+		int position;
+};
+
+/*	Defining an enumerator which includes slot types  */
+enum slot_types{
+	GROUND,
+	HILL,
+	CITY,
 };
 
 /*Function prototypes that pass the pointer to a struct as the
@@ -26,6 +34,8 @@ void setElfValues(struct player *name);
 void setHumanValues(struct player *name);
 void setOgreValues(struct player *name);
 void setWizardValues(struct player *name);
-void fromUser(void);
+void playersFromUser(struct player players[], int num_players);
+void slotsFromUser(enum slot_types slots[], int num_slots);
+void populateBoard(struct player players[], enum slot_types slots[], int num_players, int num_slots);
 
 #endif /* SETVALUES_H_ */

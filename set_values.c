@@ -8,27 +8,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <stdbool.h>
+#include "setvalues.h"
 
-/*Defining a struct named players with the needed variables.*/
-struct player{
-		char type[20];
-		char name[50];
-		int smartness;
-		int strength;
-		int dexterity;
-		int magic;
-		int luck;
-		int life;
-};
-
-
-/*Function prototypes that pass the pointer to a struct as the
-input parameter.*/
-void setElfValues(struct player *name);
-void setHumanValues(struct player *name);
-void setOgreValues(struct player *name);
-void setWizardValues(struct player *name);
-void fromUser(void);
+/*  Variable r stores an enumerator of type slot_types  */
+enum slot_types r;
 
 /*setElfValues function that takes a struct pointer as an input parameter.*/
 void setElfValues(struct player *name){
@@ -146,31 +130,16 @@ void setWizardValues(struct player *name){
 	//are they suppose to have dexterity?
 }
 
-void fromUser(void){
+void playersFromUser(struct player players[], int num_players){
 
 	/*Declaring the variables needed.*/
-		int num_players, i;
-		int type;
+		//int num_players, num_slots, i, type;
+		int i, type;
 
 		/*Generates different random numbers everytime the random function is called.*/
 		srand(time(NULL));
 
-		/*Ask the user to input how many players are playing the game and store it
-		in the variable num_players*/
-		printf("How many players would you like to input (max 6): ");
-		scanf("%d", &num_players);
 
-		/*If the user inputs a number greater than the maximum number of players then
-		tell them that there was an error and ask them to input the number again.*/
-		while(num_players>6){
-			printf("\nYou can only have a maximum of 6 players. Try again.");
-			printf("\nHow many players would you like to input (max 6): ");
-			scanf("%d", &num_players);
-		}
-
-		/*Creating a array named players of size num_players and it is of type struct
-		player.*/
-		struct player players[num_players];
 
 		/*Loop around num_players times.*/
 		for(i=0; i<num_players; i++){
@@ -231,4 +200,52 @@ void fromUser(void){
 			printf("Magic: %d\n", players[i].magic);
 			printf("\n\n");
 		}
+}
+
+void slotsFromUser(enum slot_types slots[], int num_slots){
+	int i;
+
+	/*  Generate slots  */
+	for (i = 0; i < num_slots; i++){
+		r = rand() % 3;
+		slots[i] = r;
+	}
+
+		/*  Print list of generated slots  */
+		printf("Generated list of slots:\n");
+		for (i = 0; i < num_slots; i++){
+			printf("Slot %d: ", i + 1);
+			if (slots[i] == GROUND)
+				printf("Ground\n");
+			else if (slots[i] == HILL)
+				printf("Hill\n");
+			else if (slots[i] == CITY)
+				printf("City\n");
+		}
+		printf("\n");
+
+}
+
+void populateBoard(struct player players[], enum slot_types slots[], int num_players, int num_slots){
+	int i = 0, j, slot;
+	bool occupied = false;	// This variable is set to true when a slot number randomly selected is already occupied
+	int occupied_slots[num_slots];	// This array contains the numbers of the slots which are already occupied
+
+	srand(time(NULL));
+
+	while (i < num_players){
+		slot = (rand() % num_slots) + 1;
+		for (j = 0; j <= i; j++){
+			if (players[j].position == slot)
+				occupied = true;
+		}
+		if (!occupied){
+			occupied_slots[i] = slot;
+			players[i].position = slot;
+			i++;
+		}
+	}
+	printf("Player positions:\n");
+	for (i = 0; i < num_players; i++)
+		printf("%s - Slot %d", players[i].name, players[i].position - 1);
 }
