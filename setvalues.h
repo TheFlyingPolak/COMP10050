@@ -28,14 +28,20 @@ enum slot_types{
 	CITY,
 };
 
+/*	Defining a struct named slots with the needed variables  */
+struct slot{
+	enum slot_types type;
+	int player;
+};
+
 /*Function prototypes that pass the pointer to a struct as the
 input parameter.*/
 void setElfValues(struct player *name);
 void setHumanValues(struct player *name);
 void setOgreValues(struct player *name);
 void setWizardValues(struct player *name);
-void playersFromUser(struct player players[], int num_players);
-void slotsFromUser(enum slot_types slots[], int num_slots);
-void populateBoard(struct player players[], enum slot_types slots[], int num_players, int num_slots);
+void playersFromUser(struct player players[]);
+void slotsFromUser(struct slot slots[]);
+void populateBoard(struct player players[], struct slot slots[]);
 
 #endif /* SETVALUES_H_ */

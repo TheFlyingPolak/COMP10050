@@ -11,8 +11,8 @@
 #include <stdbool.h>
 #include "setvalues.h"
 
-/*  Variable r stores an enumerator of type slot_types  */
-enum slot_types r;
+/*  This statement allows these global variables, declared in main.c, to be accessed by this file  */
+extern int num_players, num_slots;
 
 /*setElfValues function that takes a struct pointer as an input parameter.*/
 void setElfValues(struct player *name){
@@ -130,7 +130,7 @@ void setWizardValues(struct player *name){
 	//are they suppose to have dexterity?
 }
 
-void playersFromUser(struct player players[], int num_players){
+void playersFromUser(struct player players[]){
 
 	/*Declaring the variables needed.*/
 		//int num_players, num_slots, i, type;
@@ -148,6 +148,12 @@ void playersFromUser(struct player players[], int num_players){
 			printf("Please select a type for player %d.\n", i+1);
 			printf("1 = Elf, 2 = Human, 3 = Ogre, 4 = Wizard\n");
 			scanf("%d", &type);
+
+			/*  Test the input to see if it is valid  */
+			while (type < 1 && type > 4){
+				printf("Such creature does not exist. Choose a different one.\n");
+				scanf("%d", &type);
+			}
 
 			/*If the value of type corresponds to each case then do the following.*/
 			switch(type){
@@ -202,34 +208,33 @@ void playersFromUser(struct player players[], int num_players){
 		}
 }
 
-void slotsFromUser(enum slot_types slots[], int num_slots){
+void slotsFromUser(struct slot slots[]){
 	int i;
 
 	/*  Generate slots  */
 	for (i = 0; i < num_slots; i++){
-		r = rand() % 3;
-		slots[i] = r;
+		slots[i].type = rand() % 3;
+		slots[i].player = 0;	// 0 is the default value for when the slot is unoccupied
 	}
 
 		/*  Print list of generated slots  */
 		printf("Generated list of slots:\n");
 		for (i = 0; i < num_slots; i++){
 			printf("Slot %d: ", i + 1);
-			if (slots[i] == GROUND)
+			if (slots[i].type == GROUND)
 				printf("Ground\n");
-			else if (slots[i] == HILL)
+			else if (slots[i].type == HILL)
 				printf("Hill\n");
-			else if (slots[i] == CITY)
+			else if (slots[i].type == CITY)
 				printf("City\n");
 		}
 		printf("\n");
 
 }
 
-void populateBoard(struct player players[], enum slot_types slots[], int num_players, int num_slots){
+void populateBoard(struct player players[], struct slot slots[]){
 	int i = 0, j, slot;
-	bool occupied = false;	// This variable is set to true when a slot number randomly selected is already occupied
-	int occupied_slots[num_slots];	// This array contains the numbers of the slots which are already occupied
+	bool taken = false;		// This variable is set to true when a slot number randomly selected is already occupied
 
 	srand(time(NULL));
 
@@ -237,15 +242,16 @@ void populateBoard(struct player players[], enum slot_types slots[], int num_pla
 		slot = (rand() % num_slots) + 1;
 		for (j = 0; j <= i; j++){
 			if (players[j].position == slot)
-				occupied = true;
+				taken = true;
 		}
-		if (!occupied){
-			occupied_slots[i] = slot;
+		if (!taken){
 			players[i].position = slot;
+			slots[slot].player = i + 1;
 			i++;
 		}
 	}
 	printf("Player positions:\n");
 	for (i = 0; i < num_players; i++)
-		printf("%s - Slot %d", players[i].name, players[i].position - 1);
+		printf("%s - Slot %d\n", players[i].name, players[i].position - 1);
+	printf("\n");
 }
