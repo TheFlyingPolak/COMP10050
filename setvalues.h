@@ -8,6 +8,10 @@
 #ifndef SETVALUES_H_
 #define SETVALUES_H_
 
+/*  This statement allows these global variables, declared in main.c, to be accessed by every file where this
+ * 	header is included  */
+extern int num_players, num_slots;
+
 /*Defining a struct named players with the needed variables.*/
 struct player{
 		char type[20];

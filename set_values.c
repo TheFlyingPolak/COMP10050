@@ -11,9 +11,6 @@
 #include <stdbool.h>
 #include "setvalues.h"
 
-/*  This statement allows these global variables, declared in main.c, to be accessed by this file  */
-extern int num_players, num_slots;
-
 /*setElfValues function that takes a struct pointer as an input parameter.*/
 void setElfValues(struct player *name){
 	int j;
@@ -32,9 +29,10 @@ void setElfValues(struct player *name){
 	j = rand()%30+50;
 	(*name).magic = j;
 
-	(*name).life = 100;
+	j = rand()%100+1;
+	(*name).dexterity = j;
 
-	//are they uppose to have dexterity?
+	(*name).life = 100;
 }
 
 void setHumanValues(struct player *name){
@@ -62,10 +60,6 @@ void setHumanValues(struct player *name){
 		total = 0;
 		total = ( (*name).luck + (*name).smartness + (*name).strength + (*name).dexterity + (*name).magic );
 	}
-
-	//Are they suppose to have magic?
-
-
 }
 
 void setOgreValues(struct player *name){
@@ -126,8 +120,6 @@ void setWizardValues(struct player *name){
 	(*name).magic = j;
 
 	(*name).life = 100;
-
-	//are they suppose to have dexterity?
 }
 
 void playersFromUser(struct player players[]){
@@ -150,7 +142,7 @@ void playersFromUser(struct player players[]){
 			scanf("%d", &type);
 
 			/*  Test the input to see if it is valid  */
-			while (type < 1 && type > 4){
+			while (type < 1 || type > 4){
 				printf("Such creature does not exist. Choose a different one.\n");
 				scanf("%d", &type);
 			}
@@ -204,8 +196,11 @@ void playersFromUser(struct player players[]){
 			printf("Luck: %d\n", players[i].luck);
 			printf("Smartness: %d\n", players[i].smartness);
 			printf("Magic: %d\n", players[i].magic);
-			printf("\n\n");
+			printf("Strength: %d\n", players[i].strength);
+			printf("Dexterity: %d\n", players[i].dexterity);
+			printf("----------------------------------------------------\n");
 		}
+		printf("\n");
 }
 
 void slotsFromUser(struct slot slots[]){
@@ -234,24 +229,31 @@ void slotsFromUser(struct slot slots[]){
 
 void populateBoard(struct player players[], struct slot slots[]){
 	int i = 0, j, slot;
-	bool taken = false;		// This variable is set to true when a slot number randomly selected is already occupied
+	bool taken;		// This variable is set to true when a slot number randomly selected is already occupied
 
 	srand(time(NULL));
 
 	while (i < num_players){
-		slot = (rand() % num_slots) + 1;
-		for (j = 0; j <= i; j++){
-			if (players[j].position == slot)
+		taken = false;		// bool taken is reset after each iteration of the loop
+		slot = rand() % num_slots;
+		for (j = 0; j < i; j++){
+			if (players[j].position == slot + 1){
 				taken = true;
+				break;
+			}
 		}
-		if (!taken){
-			players[i].position = slot;
-			slots[slot].player = i + 1;
+
+		/*  Variables players[].position and slots[].player all store numbers greater than 0.
+		 	Variable slot stores an index, i.e. a number starting from 0  */
+
+		if (!taken){							// slot stores the index of a slot in the slots array (number from 0)
+			players[i].position = slot + 1;		// players[].position stores the slot number (number from 1)
+			slots[slot].player = i + 1;			// slots[].player stores the player number (number from 1)
 			i++;
 		}
 	}
 	printf("Player positions:\n");
 	for (i = 0; i < num_players; i++)
-		printf("%s - Slot %d\n", players[i].name, players[i].position - 1);
+		printf("%s - Slot %d\n", players[i].name, players[i].position);
 	printf("\n");
 }

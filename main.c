@@ -15,6 +15,9 @@ int main(){
 
 	int ans;
 
+	/*	Welcome message  */
+	printf("Welcome to CrossFire beta,\na game of fantasy, imagination and chance!\n\n");
+
 	printf("Would you like to read Players and Slots from a file?\n");
 	printf("Enter 1 for Yes.\n");
 	printf("Enter 0 for No.\n");
@@ -73,12 +76,17 @@ int main(){
 			/*  Call function to populate the board  */
 			populateBoard(players, slots);
 
+			/*	Call the function to run the game  */
 			runGame(players, slots, num_players, num_slots);
 		}
 
-		else{
+		else{	// Produce error message if user input is invalid
 			printf("Please provide a valid input.\n");
 		}
+
+	/*	Goodbye message  */
+	printf("\nThank you for playing this beta version of CrossFire!\n");
+	printf("If you liked it, please consider donating to support the development of CrossFire.\n");
 
 	return 0;
 }
