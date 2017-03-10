@@ -74,7 +74,7 @@ void runGame(struct player players[], struct slot slots[], int num_players, int 
 				break;
 			case 2:
 				/*  Call the attack function to attack a nearby player  */
-				attack(players, slots, i);
+				closestPlayer(players, slots, num_players, num_slots, i);
 				break;
 			case 0:
 				/*	Print this taunt and skip to the next player in sequence  */
@@ -187,7 +187,77 @@ void move(struct player players[], struct slot slots[], int currentPlayer){
 	printf("\n\n");
 }
 
-void attack(struct player players[], struct slot slots[], int currentPlayer){
-	// To be implemented
-	printf("My Lord, I do not yet know the art of combat!\n\n");
+void attackPlayer(struct player players[], int attacked_player, int current_player){
+	
+	attacked_player-=1;
+	
+	if(players[attacked_player].strength <=70){
+		players[attacked_player].life = (players[attacked_player].life - (0.5 * players[attacked_player].strength));
+	}else if(players[attacked_player].strength >70){
+		players[current_player].life = (players[current_player].life - (0.3 * players[attacked_player].strength));
+	}
 }
+
+void closestPlayer(struct player players[], struct slot slots[], int num_players, int num_slots, int current_player){
+	
+	int i=0, current_player_position, greatest_difference=20, tmp;
+	int ans = 0;
+	int j=0;
+	int p1, p2;
+	int c=0;
+	
+	current_player_position = players[current_player].position;
+	printf("Current Player Position : %d.", current_player_position);
+	
+
+	for(i=0; i<num_players; i++){
+		if(players[i].position>current_player_position){
+			tmp = players[i].position - current_player_position;
+			if(tmp<=greatest_difference){
+				greatest_difference = tmp;
+				closest_players[i] = tmp;
+			}
+		}else if(players[i].position<current_player_position){
+			tmp = current_player_position - players[i].position;
+			if(tmp<=greatest_difference){
+					greatest_difference = tmp;
+					closest_players[i] = tmp;
+				}
+		}
+	}
+	
+	c=5;
+	
+	for(i=0; i<6; i++){
+		for(j=i+1; j<6; j++){
+			if((closest_players[i] == greatest_difference) && (closest_players[j] == greatest_difference)){
+				p1 = i+1;
+				p2 = j+1;
+				printf("Player %d: %s and Player %d: %s are the same distance apart.\n", p1, players[p1].name, p2, players[p2].name);
+				printf("Enter the number of the player you wish to attack: \n");
+				scanf("%d", &ans);
+				while(c<1){
+					if((ans != p1) || (ans != p2)){
+						printf("Enter the number of the player you wish to attack: \n");
+						scanf("%d", &ans);
+						ans -=1;
+					}else{
+						c=2;
+					}
+				}
+				i=8;
+			}else if(closest_players[i] == greatest_difference){
+				ans = i+1;
+			}else if(closest_players[j] == greatest_difference){
+				ans = j+1;
+			}
+		}
+	}
+
+	attackPlayer(players, ans, current_player);
+	
+	for(i=0; i<6; i++){
+		closest_players[i] = 0;
+	}
+}
+
